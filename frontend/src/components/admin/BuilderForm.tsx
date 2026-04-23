@@ -114,7 +114,7 @@ export default function BuilderForm({ page, onChange, onSave, onCopy }: BuilderF
       <div className="form-section stack-md">
         <div>
           <h3>GL codes</h3>
-          <p className="muted-text">Display or route collected payments into demo accounting buckets.</p>
+          <p className="muted-text">Display or route collected payments into accounting buckets.</p>
         </div>
         <Input
           label="GL codes"

@@ -36,8 +36,8 @@ export default function PreviewPanel({ page }: { page: PaymentPage }) {
           <div className="payment-preview-body">
             <BillSummaryCard page={page} amount={previewAmount} />
             <div className="card card-padding stack-md">
-              <Input label="Payer name" value="Demo payer" readOnly />
-              <Input label="Email address" value="demo@example.com" readOnly />
+              <Input label="Payer name" value="Jordan Smith" readOnly />
+              <Input label="Email address" value="jordan@example.com" readOnly />
               {page.customFields.map((field) =>
                 field.fieldType === 'dropdown' ? (
                   <Select
@@ -69,7 +69,7 @@ export default function PreviewPanel({ page }: { page: PaymentPage }) {
                 ))}
               </div>
               <div className="stripe-placeholder">
-                <strong>Stripe Payment Element area</strong>
+                <strong>Stripe payment element area</strong>
                 <p className="muted-text">Integration-ready seam for live client secret and Stripe Elements wiring.</p>
                 <div className="stripe-lines">
                   <span />

@@ -1,5 +1,5 @@
 export function adminEditRoute(pageId: string) {
-  return `/admin/payment-pages/${pageId}/edit`
+  return `/dashboard/payment-pages/${pageId}/edit`
 }
 
 export function publicPayRoute(slug: string) {

@@ -38,7 +38,7 @@ export default function PaymentPagesPage() {
         title="Payment pages"
         description="Create and manage reusable branded payment pages for balances, deposits, and flexible collections."
         actions={
-          <Link to="/admin/payment-pages/new">
+          <Link to="/dashboard/payment-pages/new">
             <Button>Create new page</Button>
           </Link>
         }
@@ -64,9 +64,9 @@ export default function PaymentPagesPage() {
         ) : (
           <EmptyState
             title="No payment pages found"
-            message="Try a different search or create a new branded page for your demo flow."
+            message="Try a different search or create a new branded page for your payment flow."
             action={
-              <Link to="/admin/payment-pages/new">
+              <Link to="/dashboard/payment-pages/new">
                 <Button>Create page</Button>
               </Link>
             }

@@ -21,12 +21,12 @@ export default function PaymentSuccessPage() {
         tone="success"
         eyebrow="Payment received"
         title="Your payment was submitted successfully."
-        description="This receipt-style state confirms the demo transaction and leaves a clear next step for the payer."
+        description="This receipt confirms the submitted payment and gives the payer a clean next step."
       >
         <div className="stack-sm">
           <div className="summary-row">
             <span>Transaction ID</span>
-            <strong>{transaction?.id ?? 'txn-demo-placeholder'}</strong>
+            <strong>{transaction?.id ?? 'Pending confirmation'}</strong>
           </div>
           <div className="summary-row">
             <span>Amount paid</span>
@@ -41,14 +41,14 @@ export default function PaymentSuccessPage() {
             <strong>{formatDateTime(transaction?.createdAt ?? new Date().toISOString())}</strong>
           </div>
           <p className="muted-text">
-            Next step: the provider team can reconcile this demo payment in the reporting view immediately.
+            Next step: the provider team can reconcile this payment in the reporting workspace.
           </p>
           <div className="action-row">
             <Link to={`/pay/${slug}`}>
               <Button variant="secondary">Make another payment</Button>
             </Link>
             <Link to="/login">
-              <Button>Return to admin</Button>
+              <Button>Return to sign in</Button>
             </Link>
           </div>
         </div>

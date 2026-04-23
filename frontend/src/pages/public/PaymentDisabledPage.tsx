@@ -18,7 +18,7 @@ export default function PaymentDisabledPage() {
         <div className="stack-sm">
           <p className="muted-text">Please contact your provider team for the most current payment instructions.</p>
           <Link to="/login">
-            <Button variant="secondary">Return to admin</Button>
+            <Button variant="secondary">Return to sign in</Button>
           </Link>
         </div>
       </PaymentStatusBanner>

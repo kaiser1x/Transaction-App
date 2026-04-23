@@ -41,9 +41,9 @@ export default function ReportsPage() {
         title="Reporting"
         description="Review collection outcomes, isolate page performance, and monitor method and GL breakdowns."
         actions={
-          <Button variant="secondary">
+          <Button variant="secondary" onClick={() => void reportsApi.downloadCsv(filters)}>
             <Download size={16} aria-hidden="true" />
-            Export placeholder
+            Export CSV
           </Button>
         }
       />
@@ -54,7 +54,7 @@ export default function ReportsPage() {
         <StatCard title="Total collected" value={formatCurrency(report.summary.totalCollected)} />
         <StatCard title="Average payment" value={formatCurrency(report.summary.averagePaymentAmount)} />
         <StatCard title="Successful payments" value={String(report.summary.successfulPayments)} />
-        <StatCard title="Active pages" value={String(report.summary.activePages)} />
+        <StatCard title="Active pages" value={String(pages.filter((page) => page.isActive).length)} />
       </div>
 
       <div className="breakdown-grid">
