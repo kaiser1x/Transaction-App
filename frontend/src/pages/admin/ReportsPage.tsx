@@ -1,3 +1,9 @@
+import AdminLayout from "../../layouts/AdminLayout";
+
 export default function ReportsPage() {
-  return <div>Reports Page</div>;
+  return (
+    <AdminLayout title="Reports Page">
+      <div>Dashboard content goes here.</div>
+    </AdminLayout>
+  );
 }

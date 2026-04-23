@@ -1,3 +1,9 @@
+import AdminLayout from "../../layouts/AdminLayout";
+
 export default function PaymentPageEditorPage() {
-  return <div>Payment Page Editor</div>;
+  return (
+    <AdminLayout title="Payment Page Editor">
+      <div>Dashboard content goes here.</div>
+    </AdminLayout>
+  );
 }

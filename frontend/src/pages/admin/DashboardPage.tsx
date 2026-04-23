@@ -1,3 +1,9 @@
+import AdminLayout from "../../layouts/AdminLayout";
+
 export default function DashboardPage() {
-  return <div>Dashboard Page</div>;
+  return (
+    <AdminLayout title="Dashboard">
+      <div>Dashboard content goes here.</div>
+    </AdminLayout>
+  );
 }
