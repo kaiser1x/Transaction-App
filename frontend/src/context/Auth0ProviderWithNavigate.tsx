@@ -1,7 +1,7 @@
 import { Auth0Provider } from '@auth0/auth0-react'
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { APP_ORIGIN, AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_DOMAIN } from '../utils/constants'
+import { AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_DOMAIN } from '../utils/constants'
 
 type RedirectAppState = {
   returnTo?: string
@@ -15,7 +15,7 @@ export default function Auth0ProviderWithNavigate({ children }: { children: Reac
       domain={AUTH0_DOMAIN}
       clientId={AUTH0_CLIENT_ID}
       authorizationParams={{
-        redirect_uri: APP_ORIGIN,
+        redirect_uri: globalThis.location.origin,
         audience: AUTH0_AUDIENCE || undefined,
       }}
       onRedirectCallback={(appState?: RedirectAppState) => {

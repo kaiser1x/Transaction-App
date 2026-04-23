@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { authApi } from '../api/authApi'
 import { clearTokenGetter, setTokenGetter } from '../api/client'
 import type { AppUser } from '../types/auth'
-import { APP_ORIGIN } from '../utils/constants'
+
 
 type SessionContextValue = {
   user: AppUser | null
@@ -61,7 +61,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       await loginWithRedirect({
         appState: { returnTo },
         authorizationParams: {
-          redirect_uri: APP_ORIGIN,
+          redirect_uri: globalThis.location.origin,
         },
       })
     },
@@ -69,7 +69,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       await loginWithRedirect({
         appState: { returnTo },
         authorizationParams: {
-          redirect_uri: APP_ORIGIN,
+          redirect_uri: globalThis.location.origin,
           screen_hint: 'signup',
         },
       })
@@ -78,7 +78,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       clearTokenGetter()
       syncedRef.current = false
       setUser(null)
-      await auth0Logout({ logoutParams: { returnTo: APP_ORIGIN } })
+      await auth0Logout({ logoutParams: { returnTo: globalThis.location.origin } })
     },
     async markVerified() {
       const refreshed = await authApi.getSession(Boolean(auth0User?.email_verified))
