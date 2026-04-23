@@ -1,16 +1,20 @@
 import { BarChart3, CreditCard, LayoutDashboard, LogOut, Settings, Sparkles } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useSession } from '../../context/SessionContext'
-
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/dashboard/payment-pages', label: 'Payment pages', icon: CreditCard },
-  { to: '/dashboard/reports', label: 'Reporting', icon: BarChart3 },
-]
-
 export default function Sidebar() {
-  const { logout } = useSession()
+  const { logout, user } = useSession()
   const navigate = useNavigate()
+  const navItems =
+    user?.role === 'admin'
+      ? [
+          { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { to: '/dashboard/payment-pages', label: 'Payment pages', icon: CreditCard },
+          { to: '/dashboard/reports', label: 'Reporting', icon: BarChart3 },
+        ]
+      : [
+          { to: '/dashboard/payment-options', label: 'Quick pay pages', icon: CreditCard },
+          { to: '/dashboard/my-payments', label: 'Payment log', icon: BarChart3 },
+        ]
 
   return (
     <aside className="admin-sidebar">
@@ -35,9 +39,11 @@ export default function Sidebar() {
 
       <div className="sidebar-note stack-sm">
         <div className="badge badge-info">Connected workspace</div>
-        <strong>Role-aware product experience</strong>
+        <strong>{user?.role === 'admin' ? 'Admin workspace' : 'Payer workspace'}</strong>
         <p style={{ margin: 0 }}>
-          Signed-in users see their own workspace, while elevated roles unlock management and reporting tools.
+          {user?.role === 'admin'
+            ? 'You have access to page management, reporting, and operational tools.'
+            : 'Your account is limited to payment options and your own payment history.'}
         </p>
       </div>
 

@@ -9,6 +9,8 @@ import ReportsPage from '../pages/admin/ReportsPage'
 import LoginPage from '../pages/auth/LoginPage'
 import SignupPage from '../pages/auth/SignupPage'
 import VerifyEmailPage from '../pages/auth/VerifyEmailPage'
+import MyPaymentsPage from '../pages/payer/MyPaymentsPage'
+import PaymentOptionsPage from '../pages/payer/PaymentOptionsPage'
 import PaymentDisabledPage from '../pages/public/PaymentDisabledPage'
 import PaymentFailurePage from '../pages/public/PaymentFailurePage'
 import PaymentSuccessPage from '../pages/public/PaymentSuccessPage'
@@ -31,6 +33,10 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route element={<RoleRoute allowedRole="payer" />}>
+            <Route path="payment-options" element={<PaymentOptionsPage />} />
+            <Route path="my-payments" element={<MyPaymentsPage />} />
+          </Route>
           <Route element={<RoleRoute allowedRole="admin" />}>
             <Route path="payment-pages" element={<PaymentPagesPage />} />
             <Route path="payment-pages/new" element={<PaymentPageEditorPage />} />

@@ -41,6 +41,18 @@ router.get("/", checkJwt, requireAdmin, async (req, res, next) => {
   }
 });
 
+// GET /api/pages/available — list active pages for authenticated payer users
+router.get("/available", checkJwt, async (_req, res, next) => {
+  try {
+    const pages = await query<PaymentPage>(
+      "SELECT * FROM payment_pages WHERE is_active = TRUE ORDER BY updated_at DESC"
+    );
+    res.json(pages);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/pages — create a payment page
 router.post("/", checkJwt, requireAdmin, async (req, res, next) => {
   try {

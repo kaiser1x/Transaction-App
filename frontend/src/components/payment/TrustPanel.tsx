@@ -9,7 +9,7 @@ const trustPoints = [
   },
   {
     label: 'Secure processing seam',
-    detail: 'Card entry stays inside the Stripe Payment Element area when real keys are wired.',
+    detail: 'Card entry stays inside Stripe Elements using sandbox credentials for the live walkthrough.',
     icon: LockKeyhole,
   },
   {

@@ -21,6 +21,10 @@ export function listPages() {
   return api.get<ApiPaymentPage[]>("/api/pages");
 }
 
+export function listAvailablePages() {
+  return api.get<ApiPaymentPage[]>("/api/pages/available");
+}
+
 export function getPageBySlug(slug: string) {
   return api.get<ApiPaymentPage>(`/api/pages/${slug}`);
 }

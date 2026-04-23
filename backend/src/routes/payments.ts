@@ -1,10 +1,40 @@
 import { Router } from "express";
 import { randomUUID } from "crypto";
-import { queryOne, execute } from "../db.js";
+import { query, queryOne, execute } from "../db.js";
+import { checkJwt } from "../middleware/auth.js";
 import { createPaymentIntent, verifyPaymentIntent } from "../services/stripe.js";
-import type { PaymentPage } from "../types.js";
+import type { PaymentPage, Transaction } from "../types.js";
 
 const router = Router();
+
+interface PaymentHistoryRow extends Transaction {
+  page_title: string;
+}
+
+// GET /api/payments/mine — return transactions for the signed-in payer email
+router.get("/mine", checkJwt, async (req, res, next) => {
+  try {
+    const payerEmail = req.auth?.payload["email"] as string | undefined;
+
+    if (!payerEmail) {
+      res.status(400).json({ error: "Signed-in user email is required" });
+      return;
+    }
+
+    const rows = await query<PaymentHistoryRow>(
+      `SELECT t.*, p.title AS page_title
+       FROM transactions t
+       JOIN payment_pages p ON t.page_id = p.id
+       WHERE LOWER(t.payer_email) = LOWER(?)
+       ORDER BY t.created_at DESC`,
+      [payerEmail]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // POST /api/payments/intent — create Stripe PaymentIntent
 router.post("/intent", async (req, res, next) => {

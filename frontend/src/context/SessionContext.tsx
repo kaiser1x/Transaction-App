@@ -16,6 +16,27 @@ type SessionContextValue = {
 
 const SessionContext = createContext<SessionContextValue | undefined>(undefined)
 
+function normalizeName(name?: string, email?: string) {
+  const trimmedName = name?.trim()
+  const trimmedEmail = email?.trim().toLowerCase()
+
+  if (!trimmedName) return undefined
+  if (trimmedEmail && trimmedName.toLowerCase() === trimmedEmail) return undefined
+
+  return trimmedName
+}
+
+function mergeAuth0Profile(user: AppUser, auth0User?: { email?: string; name?: string; email_verified?: boolean }) {
+  const email = user.email || auth0User?.email || ''
+
+  return {
+    ...user,
+    email,
+    name: normalizeName(user.name, email) ?? normalizeName(auth0User?.name, email),
+    emailVerified: user.emailVerified ?? auth0User?.email_verified,
+  } satisfies AppUser
+}
+
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -44,12 +65,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
     void (async () => {
       const emailVerified = Boolean(auth0User?.email_verified)
+      const profile = {
+        email: auth0User?.email,
+        name: auth0User?.name,
+      }
       const nextUser = syncedRef.current
         ? await authApi.getSession(emailVerified)
-        : await authApi.sync(emailVerified)
+        : await authApi.sync(profile, emailVerified)
 
       syncedRef.current = true
-      setUser(nextUser)
+      setUser(mergeAuth0Profile(nextUser, auth0User))
       setLoading(false)
     })()
   }, [auth0User?.email_verified, getAccessTokenSilently, isAuthenticated, isLoading])
@@ -82,7 +107,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     },
     async markVerified() {
       const refreshed = await authApi.getSession(Boolean(auth0User?.email_verified))
-      setUser(refreshed)
+      setUser(mergeAuth0Profile(refreshed, auth0User))
     },
   }
 

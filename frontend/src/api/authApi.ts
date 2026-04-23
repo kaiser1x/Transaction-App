@@ -9,11 +9,16 @@ type ApiUser = {
   role: 'admin' | 'payer'
 }
 
+type SyncPayload = {
+  email?: string
+  name?: string
+}
+
 function mapUser(user: ApiUser, emailVerified?: boolean): AppUser {
   return {
     id: user.id,
     auth0Id: user.auth0_id,
-    email: user.email,
+    email: user.email ?? '',
     name: user.name ?? undefined,
     role: user.role,
     emailVerified,
@@ -21,8 +26,8 @@ function mapUser(user: ApiUser, emailVerified?: boolean): AppUser {
 }
 
 export const authApi = {
-  async sync(emailVerified?: boolean) {
-    const user = await api.post<ApiUser>('/api/auth/sync', {})
+  async sync(payload: SyncPayload = {}, emailVerified?: boolean) {
+    const user = await api.post<ApiUser>('/api/auth/sync', payload)
     return mapUser(user, emailVerified)
   },
   async getSession(emailVerified?: boolean) {

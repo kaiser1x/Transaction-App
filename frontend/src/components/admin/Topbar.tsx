@@ -5,11 +5,13 @@ import { useSession } from '../../context/SessionContext'
 
 export default function Topbar() {
   const { user } = useSession()
+  const searchPlaceholder =
+    user?.role === 'admin' ? 'Search pages, payers, or GL codes' : 'Search quick payment pages or your recent activity'
 
   return (
     <header className="topbar">
       <div className="topbar-group">
-        <SearchBar placeholder="Search pages, payers, or GL codes" aria-label="Search the Wayspend workspace" />
+        <SearchBar placeholder={searchPlaceholder} aria-label="Search the Wayspend workspace" />
       </div>
       <div className="topbar-actions">
         <Badge tone={user?.emailVerified ? 'success' : 'warning'}>

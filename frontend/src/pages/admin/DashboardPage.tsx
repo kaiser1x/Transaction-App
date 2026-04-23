@@ -1,6 +1,6 @@
 import { Activity, BadgeDollarSign, CircleAlert, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { pagesApi } from '../../api/pagesApi'
 import { reportsApi } from '../../api/reportsApi'
 import ActivityTable from '../../components/admin/ActivityTable'
@@ -34,50 +34,7 @@ export default function DashboardPage() {
   if (loading) return <LoadingState title="Opening your dashboard..." />
 
   if (user?.role !== 'admin') {
-    return (
-      <div className="stack-lg">
-        <PageHeader
-          title={`Welcome back${user?.name ? `, ${user.name}` : ''}`}
-          description="Your dashboard is generated from the currently authenticated user account and role."
-        />
-        <div className="card-grid-2">
-          <Card>
-            <div className="card-header">
-              <div>
-                <h2 className="card-title">Your account</h2>
-                <p className="card-subtitle">Resolved from Auth0 and synced through the backend users table.</p>
-              </div>
-            </div>
-            <div className="stack-sm">
-              <div className="summary-row">
-                <span>Name</span>
-                <strong>{user?.name ?? 'Authenticated user'}</strong>
-              </div>
-              <div className="summary-row">
-                <span>Email</span>
-                <strong>{user?.email}</strong>
-              </div>
-              <div className="summary-row">
-                <span>Role</span>
-                <strong>{user?.role}</strong>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="card-header">
-              <div>
-                <h2 className="card-title">Workspace access</h2>
-                <p className="card-subtitle">Operational views appear automatically if your account is granted admin access.</p>
-              </div>
-            </div>
-            <p className="muted-text">
-              Standard users can authenticate and access their own dashboard safely, while page management and reporting
-              remain reserved for users whose database role is `admin`.
-            </p>
-          </Card>
-        </div>
-      </div>
-    )
+    return <Navigate to="/dashboard/payment-options" replace />
   }
 
   if (!report) return <LoadingState />
