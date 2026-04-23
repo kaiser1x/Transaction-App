@@ -2,6 +2,8 @@
   "name": "qpp",
   "private": true,
   "scripts": {
+    "build": "cd backend && npm install && npm run build",
+    "start": "cd backend && node dist/index.js",
     "db:up": "docker compose --env-file ./backend/.env up -d",
     "db:down": "docker compose --env-file ./backend/.env down",
     "db:logs": "docker compose logs -f db",
