@@ -16,7 +16,9 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mysql2": "^3.22.2"
+    "express-oauth2-jwt-bearer": "^1.8.0",
+    "mysql2": "^3.22.2",
+    "stripe": "^22.0.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

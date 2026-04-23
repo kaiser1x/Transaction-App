@@ -1,32 +1,34 @@
-export type AmountMode = "fixed" | "range" | "open";
+// UI-layer types (used in forms / state — camelCase)
+
+export type AmountMode = "fixed" | "min_max" | "user_entered";
 
 export type CustomFieldType = "text" | "number" | "dropdown" | "date" | "checkbox";
 
 export type CustomField = {
   id: string;
   label: string;
-  fieldType: CustomFieldType;
+  field_type: CustomFieldType;
   required: boolean;
   placeholder?: string;
-  helperText?: string;
+  helper_text?: string;
   options?: string[];
-  order: number;
+  display_order: number;
 };
 
 export type PaymentPage = {
   id: string;
   slug: string;
   title: string;
-  subtitle?: string;
   description?: string;
-  brandColor: string;
-  logoUrl?: string;
-  headerMessage?: string;
-  footerMessage?: string;
-  amountMode: AmountMode;
-  fixedAmount?: number;
-  minAmount?: number;
-  maxAmount?: number;
-  isActive: boolean;
-  customFields: CustomField[];
+  brand_color: string;
+  logo_url?: string;
+  header_msg?: string;
+  footer_msg?: string;
+  amount_mode: AmountMode;
+  fixed_amount?: number;
+  min_amount?: number;
+  max_amount?: number;
+  gl_codes?: string[];
+  email_template?: string;
+  is_active: boolean;
 };
