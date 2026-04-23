@@ -11,7 +11,7 @@ export default function LoginPage() {
   return (
     <div className="stack-lg">
       <div className="stack-sm">
-        <div className="badge badge-info">Client login</div>
+        <div className="badge badge-info">Login</div>
         <h1>Sign in to your Wayspend workspace.</h1>
         <p>Authenticate with Auth0, sync your profile through the backend, and open the dashboard you’re allowed to access.</p>
       </div>

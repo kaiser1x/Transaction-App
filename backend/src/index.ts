@@ -25,6 +25,10 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/pages", pagesRouter);
 app.use("/api/pages/:pageId/fields", fieldsRouter);
@@ -36,7 +40,7 @@ app.use(errorHandler);
 testConnection()
   .then(() => {
     console.log("Database connected");
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(Number(PORT), "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => {
     console.error("Failed to connect to database:", err);
