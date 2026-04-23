@@ -9,6 +9,7 @@ import Button from '../../components/common/Button'
 import Card from '../../components/common/Card'
 import LoadingState from '../../components/common/LoadingState'
 import StatCard from '../../components/common/StatCard'
+import { useSession } from '../../context/SessionContext'
 import type { ReportPayload } from '../../types/report'
 import { formatCurrency } from '../../utils/formatters'
 
@@ -20,23 +21,74 @@ const defaultFilters = {
 } as const
 
 export default function DashboardPage() {
+  const { user, loading } = useSession()
   const [report, setReport] = useState<ReportPayload | null>(null)
   const [pagesCount, setPagesCount] = useState(0)
 
   useEffect(() => {
+    if (user?.role !== 'admin') return
     reportsApi.getReport(defaultFilters).then(setReport)
     pagesApi.list().then((pages) => setPagesCount(pages.length))
-  }, [])
+  }, [user?.role])
+
+  if (loading) return <LoadingState title="Opening your dashboard..." />
+
+  if (user?.role !== 'admin') {
+    return (
+      <div className="stack-lg">
+        <PageHeader
+          title={`Welcome back${user?.name ? `, ${user.name}` : ''}`}
+          description="Your dashboard is generated from the currently authenticated user account and role."
+        />
+        <div className="card-grid-2">
+          <Card>
+            <div className="card-header">
+              <div>
+                <h2 className="card-title">Your account</h2>
+                <p className="card-subtitle">Resolved from Auth0 and synced through the backend users table.</p>
+              </div>
+            </div>
+            <div className="stack-sm">
+              <div className="summary-row">
+                <span>Name</span>
+                <strong>{user?.name ?? 'Authenticated user'}</strong>
+              </div>
+              <div className="summary-row">
+                <span>Email</span>
+                <strong>{user?.email}</strong>
+              </div>
+              <div className="summary-row">
+                <span>Role</span>
+                <strong>{user?.role}</strong>
+              </div>
+            </div>
+          </Card>
+          <Card>
+            <div className="card-header">
+              <div>
+                <h2 className="card-title">Workspace access</h2>
+                <p className="card-subtitle">Operational views appear automatically if your account is granted admin access.</p>
+              </div>
+            </div>
+            <p className="muted-text">
+              Standard users can authenticate and access their own dashboard safely, while page management and reporting
+              remain reserved for users whose database role is `admin`.
+            </p>
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   if (!report) return <LoadingState />
 
   return (
     <div className="stack-lg">
       <PageHeader
-        title="Wayspend dashboard"
-        description="Monitor collection performance, recent activity, and rollout readiness for your demo environment."
+        title="Workspace dashboard"
+        description="Monitor collection performance, recent activity, and operational readiness for your organization."
         actions={
-          <Link to="/admin/payment-pages/new">
+          <Link to="/dashboard/payment-pages/new">
             <Button>Create new page</Button>
           </Link>
         }
@@ -44,7 +96,7 @@ export default function DashboardPage() {
 
       <div className="stats-grid">
         <StatCard title="Total collected" value={formatCurrency(report.summary.totalCollected)} icon={<BadgeDollarSign size={18} />} footnote="Successful payments in the selected window" />
-        <StatCard title="Average payment amount" value={formatCurrency(report.summary.averagePaymentAmount)} icon={<Wallet size={18} />} footnote="Across successful demo payments" />
+        <StatCard title="Average payment amount" value={formatCurrency(report.summary.averagePaymentAmount)} icon={<Wallet size={18} />} footnote="Across successful payments" />
         <StatCard title="Successful payments" value={String(report.summary.successfulPayments)} icon={<Activity size={18} />} footnote={`${pagesCount} pages are currently configured`} />
         <StatCard title="Failed or pending" value={String(report.summary.failedPayments + report.summary.pendingPayments)} icon={<CircleAlert size={18} />} footnote="Use reporting to isolate statuses and methods" />
       </div>
@@ -65,12 +117,12 @@ export default function DashboardPage() {
             </div>
             <div className="stack-md">
               <p style={{ margin: 0 }}>
-                Deposit collection pages are converting at higher amounts than fixed balance pages in the current demo data.
+                Deposit collection pages are converting at higher amounts than fixed balance pages in the current reporting window.
               </p>
               <p className="muted-text">
-                Push the builder flow next, then walk stakeholders from creation to public payment to reporting in one pass.
+                Use the public landing page for acquisition, then move authenticated users into the workspace and role-gated tools.
               </p>
-              <Link to="/admin/payment-pages">
+              <Link to="/dashboard/payment-pages">
                 <Button variant="secondary">Open payment pages</Button>
               </Link>
             </div>
@@ -85,7 +137,7 @@ export default function DashboardPage() {
             </div>
             <div className="stack-sm">
               <div className="summary-row">
-                <span>Admin shell and guarded routes</span>
+                <span>Authenticated dashboard access</span>
                 <strong>Ready</strong>
               </div>
               <div className="summary-row">
@@ -98,7 +150,7 @@ export default function DashboardPage() {
               </div>
               <div className="summary-row">
                 <span>Reporting</span>
-                <strong>Ready for API swap</strong>
+                <strong>Connected to backend reports</strong>
               </div>
             </div>
           </Card>

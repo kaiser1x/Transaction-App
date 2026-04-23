@@ -6,4 +6,5 @@ export type AppUser = {
   name?: string
   role: AppUserRole
   emailVerified?: boolean
+  auth0Id?: string
 }

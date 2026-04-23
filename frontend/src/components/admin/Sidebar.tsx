@@ -3,9 +3,9 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useSession } from '../../context/SessionContext'
 
 const navItems = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/payment-pages', label: 'Payment pages', icon: CreditCard },
-  { to: '/admin/reports', label: 'Reporting', icon: BarChart3 },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/dashboard/payment-pages', label: 'Payment pages', icon: CreditCard },
+  { to: '/dashboard/reports', label: 'Reporting', icon: BarChart3 },
 ]
 
 export default function Sidebar() {
@@ -24,7 +24,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="sidebar-nav" aria-label="Primary admin">
+      <nav className="sidebar-nav" aria-label="Primary workspace">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink key={to} to={to} className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}>
             <Icon size={18} aria-hidden="true" />
@@ -34,10 +34,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-note stack-sm">
-        <div className="badge badge-info">Hackathon demo</div>
-        <strong>Built for backend handoff</strong>
+        <div className="badge badge-info">Connected workspace</div>
+        <strong>Role-aware product experience</strong>
         <p style={{ margin: 0 }}>
-          Auth, page publishing, Stripe insertion, and reporting all stay behind typed seams.
+          Signed-in users see their own workspace, while elevated roles unlock management and reporting tools.
         </p>
       </div>
 

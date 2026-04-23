@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { useSession } from '../context/SessionContext'
 import AdminLayout from '../layouts/AdminLayout'
 import AuthLayout from '../layouts/AuthLayout'
 import PublicLayout from '../layouts/PublicLayout'
@@ -13,19 +12,15 @@ import VerifyEmailPage from '../pages/auth/VerifyEmailPage'
 import PaymentDisabledPage from '../pages/public/PaymentDisabledPage'
 import PaymentFailurePage from '../pages/public/PaymentFailurePage'
 import PaymentSuccessPage from '../pages/public/PaymentSuccessPage'
+import LandingPage from '../pages/public/LandingPage'
 import PublicPaymentPage from '../pages/public/PublicPaymentPage'
 import ProtectedRoute from './ProtectedRoute'
 import RoleRoute from './RoleRoute'
 
-function RootRedirect() {
-  const { user } = useSession()
-  return <Navigate to={user ? '/admin/dashboard' : '/login'} replace />
-}
-
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<RootRedirect />} />
+      <Route path="/" element={<LandingPage />} />
 
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
@@ -34,9 +29,9 @@ export default function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route element={<RoleRoute allowedRole="admin" />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route element={<RoleRoute allowedRole="admin" />}>
             <Route path="payment-pages" element={<PaymentPagesPage />} />
             <Route path="payment-pages/new" element={<PaymentPageEditorPage />} />
             <Route path="payment-pages/:id/edit" element={<PaymentPageEditorPage />} />
@@ -51,6 +46,12 @@ export default function AppRoutes() {
         <Route path="/pay/:slug/failure" element={<PaymentFailurePage />} />
         <Route path="/pay/:slug/disabled" element={<PaymentDisabledPage />} />
       </Route>
+
+      <Route path="/admin/dashboard" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/admin/payment-pages" element={<Navigate to="/dashboard/payment-pages" replace />} />
+      <Route path="/admin/payment-pages/new" element={<Navigate to="/dashboard/payment-pages/new" replace />} />
+      <Route path="/admin/payment-pages/:id/edit" element={<Navigate to="/dashboard/payment-pages" replace />} />
+      <Route path="/admin/reports" element={<Navigate to="/dashboard/reports" replace />} />
     </Routes>
   )
 }

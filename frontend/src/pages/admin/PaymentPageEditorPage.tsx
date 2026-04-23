@@ -14,17 +14,17 @@ function createBlankPage(): PaymentPage {
     slug: 'new-payment-page',
     title: 'New payment page',
     subtitle: 'Secure online payment',
-    description: 'Collect a payment with clear provider branding and demo-safe messaging.',
-    organizationName: 'Wayspend Demo Provider',
+    description: 'Collect a payment with clear provider branding and trustworthy messaging.',
+    organizationName: 'Wayspend Provider',
     brandColor: '#0b1f3a',
     logoUrl: '',
-    headerMessage: 'Payments are securely routed using Stripe test mode for this demo.',
+    headerMessage: 'Payments are securely routed and validated before confirmation.',
     footerMessage: 'Questions about your bill? Contact the provider team listed on your statement.',
     amountMode: 'fixed',
     fixedAmount: 125,
     minAmount: 25,
     maxAmount: 500,
-    glCodes: ['DEMO-GL-1000'],
+    glCodes: ['PAYMENTS-1000'],
     isActive: true,
     customFields: [],
     lastUpdated: new Date().toISOString(),
@@ -62,7 +62,7 @@ export default function PaymentPageEditorPage() {
       slug: slugify(resolvedPage.slug || resolvedPage.title) || 'payment-page',
     }
     const savedPage = await pagesApi.save(pageToSave)
-    navigate(`/admin/payment-pages/${savedPage.id}/edit`)
+    navigate(`/dashboard/payment-pages/${savedPage.id}/edit`)
   }
 
   return (

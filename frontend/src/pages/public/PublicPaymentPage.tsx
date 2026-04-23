@@ -24,6 +24,8 @@ export default function PublicPaymentPage() {
   const [page, setPage] = useState<PaymentPage | null | undefined>(undefined)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card')
   const [amount, setAmount] = useState(0)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     paymentsApi.getPublicPage(slug).then((result) => {
@@ -39,7 +41,7 @@ export default function PublicPaymentPage() {
   if (page === null) {
     return (
       <div className="public-shell">
-        <EmptyState title="Payment page not found" message="The requested page could not be loaded for this demo." />
+        <EmptyState title="Payment page not found" message="The requested page could not be loaded." />
       </div>
     )
   }
@@ -50,22 +52,59 @@ export default function PublicPaymentPage() {
   const activePage: PaymentPage = page
 
   async function handleSubmit(formData: FormData) {
+    setSubmitting(true)
+    setError(null)
+
     const payerName = String(formData.get('payerName') ?? '')
     const payerEmail = String(formData.get('payerEmail') ?? '')
     const amountValue =
       activePage.amountMode === 'fixed' ? activePage.fixedAmount ?? 0 : Number(formData.get('amount') ?? amount) || 0
-    const result = await paymentsApi.completeDemoPayment({
-      slug,
-      payerName,
-      payerEmail,
-      amount: amountValue,
-      paymentMethod,
-      glCode: String(formData.get('glCode') ?? activePage.glCodes?.[0] ?? ''),
-    })
 
-    navigate(`/pay/${slug}/${result.status === 'success' ? 'success' : 'failure'}`, {
-      state: { transaction: result.transaction, page: result.page },
-    })
+    try {
+      const intent = await paymentsApi.createIntent({
+        pageId: activePage.id,
+        payerName,
+        payerEmail,
+        amount: amountValue,
+      })
+
+      if (!intent.intentId.startsWith('mock_pi_')) {
+        setError('Payment intent created successfully, but the Stripe card-entry confirmation step still needs to be mounted in the frontend.')
+        return
+      }
+
+      const result = await paymentsApi.confirm({
+        stripeIntentId: intent.intentId,
+        pageId: activePage.id,
+        payerName,
+        payerEmail,
+        amount: amountValue,
+        paymentMethod,
+        glCode: String(formData.get('glCode') ?? activePage.glCodes?.[0] ?? ''),
+      })
+
+      navigate(`/pay/${slug}/${result.status === 'success' ? 'success' : 'failure'}`, {
+        state: {
+          transaction: {
+            id: result.transactionId,
+            pageId: activePage.id,
+            pageTitle: activePage.title,
+            payerName,
+            payerEmail,
+            amount: amountValue,
+            paymentMethod,
+            status: result.status,
+            glCode: String(formData.get('glCode') ?? activePage.glCodes?.[0] ?? ''),
+            createdAt: new Date().toISOString(),
+          },
+          page: activePage,
+        },
+      })
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Unable to submit payment right now.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -79,7 +118,7 @@ export default function PublicPaymentPage() {
         <div className="stack-lg">
           <Card className="payment-card stack-lg">
             <div className="stack-sm">
-              <div className="badge badge-warning">Demo-safe payment</div>
+              <div className="badge badge-warning">Secure payment</div>
               <h1>{activePage.title}</h1>
               <p>{activePage.description}</p>
             </div>
@@ -96,10 +135,10 @@ export default function PublicPaymentPage() {
                   <Info size={18} aria-hidden="true" />
                   <strong>{activePage.headerMessage}</strong>
                 </div>
-                <p className="muted-text">
-                  Enter any email containing <code>fail</code> to preview the failure state. Do not use real payment data.
-                </p>
+                <p className="muted-text">Amounts and page status are validated against the backend before payment confirmation.</p>
               </div>
+
+              {error ? <p className="input-error">{error}</p> : null}
 
               <div className="form-grid-2">
                 <Input label="Payer name" name="payerName" required placeholder="Full name" />
@@ -170,9 +209,10 @@ export default function PublicPaymentPage() {
               </div>
 
               <div className="stripe-placeholder">
-                <strong>Stripe Payment Element area</strong>
+                <strong>Stripe payment processing</strong>
                 <p className="muted-text">
-                  This region is reserved for real Stripe Elements once the backend returns a live client secret.
+                  This build now creates payment intents through the backend. The visual Payment Element mount is the next seam
+                  for full card entry and confirmation UX.
                 </p>
                 <div className="stripe-lines">
                   <span />
@@ -181,7 +221,7 @@ export default function PublicPaymentPage() {
                 </div>
               </div>
 
-              <Button type="submit" block>
+              <Button type="submit" block disabled={submitting}>
                 Submit secure payment
                 <ArrowRight size={16} aria-hidden="true" />
               </Button>

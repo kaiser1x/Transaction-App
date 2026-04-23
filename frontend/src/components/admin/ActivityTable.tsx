@@ -6,7 +6,7 @@ import StatusPill from '../common/StatusPill'
 export default function ActivityTable({
   transactions,
   title = 'Recent payment activity',
-  description = 'Latest demo-safe activity across all published pages.',
+  description = 'Latest activity across all published pages.',
 }: {
   transactions: Transaction[]
   title?: string

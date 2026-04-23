@@ -15,18 +15,16 @@ export default function PaymentFailurePage() {
         tone="danger"
         eyebrow="Payment failed"
         title="We could not complete that payment."
-        description="This demo state is triggered when the payer email contains the word fail, which makes it easy to show retry handling."
+        description="The payment could not be completed. Please review the details and try again."
       >
         <div className="stack-sm">
-          <p className="muted-text">
-            Try again with a different demo email, or contact the provider team if you need statement support.
-          </p>
+          <p className="muted-text">Try again, or contact the provider team if you need statement support.</p>
           <div className="action-row">
             <Link to={`/pay/${slug}`}>
               <Button>Try again</Button>
             </Link>
             <Link to="/login">
-              <Button variant="secondary">Return to admin</Button>
+              <Button variant="secondary">Return to sign in</Button>
             </Link>
           </div>
         </div>

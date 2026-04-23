@@ -19,7 +19,7 @@ const features = [
   },
   {
     title: 'Reporting and routing',
-    description: 'Monitor demo transactions, GL codes, and page performance in one admin shell.',
+    description: 'Monitor transactions, GL codes, and page performance in one workspace.',
     icon: Workflow,
   },
 ]
@@ -37,7 +37,7 @@ export default function AuthLayout() {
             <span>Healthcare payments for modern provider teams</span>
           </div>
           <h2 style={{ margin: 0, color: 'var(--cream-50)', fontSize: '2.2rem' }}>
-            The fastest way to build a polished payment demo that still feels enterprise-ready.
+            The fastest way to launch a polished payment workspace that still feels enterprise-ready.
           </h2>
           <p className="muted-text" style={{ color: 'rgba(244, 236, 221, 0.76)' }}>
             Structured for Auth0, Stripe test mode, backend API handoff, and live page distribution.

@@ -1,44 +1,33 @@
 import { ArrowRight } from 'lucide-react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Button from '../../components/common/Button'
-import Input from '../../components/common/Input'
 import { useSession } from '../../context/SessionContext'
 
 export default function LoginPage() {
-  const navigate = useNavigate()
   const location = useLocation()
   const { login } = useSession()
-
-  async function handleSubmit(formData: FormData) {
-    const email = String(formData.get('email') ?? 'ops@wayspend.demo')
-    const name = String(formData.get('name') ?? 'Avery Brooks')
-    await login(email, name)
-    navigate((location.state as { from?: string } | null)?.from ?? '/admin/dashboard')
-  }
+  const nextPath = (location.state as { from?: string } | null)?.from ?? '/dashboard'
 
   return (
     <div className="stack-lg">
       <div className="stack-sm">
-        <div className="badge badge-info">Admin sign in</div>
-        <h1>Access the Wayspend admin shell.</h1>
-        <p>Auth0-ready shell with a local mock session so the rest of the product flow is never blocked.</p>
+        <div className="badge badge-info">Client login</div>
+        <h1>Sign in to your Wayspend workspace.</h1>
+        <p>Authenticate with Auth0, sync your profile through the backend, and open the dashboard you’re allowed to access.</p>
       </div>
-      <form
-        className="stack-md"
-        onSubmit={async (event) => {
-          event.preventDefault()
-          await handleSubmit(new FormData(event.currentTarget))
-        }}
-      >
-        <Input label="Work email" name="email" type="email" defaultValue="ops@wayspend.demo" />
-        <Input label="Display name" name="name" defaultValue="Avery Brooks" />
-        <Button type="submit" block>
-          Continue to admin
+      <div className="stack-md">
+        <Button
+          block
+          onClick={async () => {
+            await login(nextPath)
+          }}
+        >
+          Continue to login
           <ArrowRight size={16} aria-hidden="true" />
         </Button>
-      </form>
+      </div>
       <p className="muted-text">
-        New workspace? <Link to="/signup">Create an account</Link>
+        Need an account? <Link to="/signup">Create one</Link>
       </p>
     </div>
   )
