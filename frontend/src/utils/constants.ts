@@ -4,3 +4,6 @@ export const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KE
 export const AUTH0_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN ?? 'demo-tenant.auth0.com'
 export const AUTH0_CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? 'demo-client-id'
 export const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE ?? ''
+export const APP_ORIGIN =
+  import.meta.env.VITE_APP_ORIGIN ||
+  (typeof window !== 'undefined' ? window.location.origin : '')
