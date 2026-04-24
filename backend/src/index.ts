@@ -18,28 +18,23 @@ const PORT = process.env["PORT"] ?? 3000;
 // Stripe webhooks must receive the raw body — register before express.json()
 app.use("/api/webhooks", express.raw({ type: "application/json" }), webhooksRouter);
 
-const normalizeOrigin = (url?: string) => url?.replace(/\/$/, "");
+const normalize = (url?: string) => url?.replace(/\/$/, '');
 
 const allowedOrigins = [
-  normalizeOrigin(process.env["FRONTEND_URL"]),
-  "http://localhost:5173",
-  "http://localhost:3000",
-].filter(Boolean) as string[];
+  normalize(process.env['FRONTEND_URL']),
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
 
-const corsOptions: cors.CorsOptions = {
+app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(normalizeOrigin(origin) ?? "")) {
+    if (!origin || allowedOrigins.includes(normalize(origin))) {
       return callback(null, true);
     }
-    return callback(new Error(`CORS blocked origin: ${origin}`));
+    return callback(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+}));
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
