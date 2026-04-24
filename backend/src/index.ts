@@ -12,6 +12,12 @@ import reportsRouter from "./routes/reports.js";
 
 dotenv.config();
 
+console.log("[auth0] AUTH0_DOMAIN present:", !!process.env["AUTH0_DOMAIN"]);
+console.log("[auth0] AUTH0_ISSUER present:", !!process.env["AUTH0_ISSUER"]);
+console.log("[auth0] AUTH0_AUDIENCE present:", !!process.env["AUTH0_AUDIENCE"]);
+console.log("[auth0] JWKS URI:", `https://${process.env["AUTH0_DOMAIN"]}/.well-known/jwks.json`);
+console.log("[auth0] Expected audience:", process.env["AUTH0_AUDIENCE"]);
+
 const app = express();
 const PORT = process.env["PORT"] ?? 3000;
 
