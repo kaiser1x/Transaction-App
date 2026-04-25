@@ -19,6 +19,8 @@ export interface ConfirmPayload {
 export interface ConfirmResponse {
   transactionId: string;
   status: "pending" | "success" | "failed";
+  receiptEmailSent?: boolean;
+  receiptEmail?: string | null;
 }
 
 export function createPaymentIntent(payload: {

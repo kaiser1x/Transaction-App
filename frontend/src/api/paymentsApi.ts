@@ -17,6 +17,16 @@ function mapPaymentMethod(method: PublicPaymentPayload['paymentMethod']) {
   return method
 }
 
+function parseList(value: string[] | string | null | undefined) {
+  if (!value) return []
+  if (Array.isArray(value)) return value
+  try {
+    return JSON.parse(value) as string[]
+  } catch {
+    return []
+  }
+}
+
 export const paymentsApi = {
   async getPublicPage(slug: string) {
     const page = await getPageBySlug(slug)
@@ -33,9 +43,20 @@ export const paymentsApi = {
       fixedAmount: page.fixed_amount ? Number(page.fixed_amount) : undefined,
       minAmount: page.min_amount ? Number(page.min_amount) : undefined,
       maxAmount: page.max_amount ? Number(page.max_amount) : undefined,
-      glCodes: page.gl_codes ? (JSON.parse(page.gl_codes) as string[]) : [],
+      glCodes: parseList(page.gl_codes),
       isActive: page.is_active,
-      customFields: [],
+      customFields: (page.custom_fields ?? [])
+        .map((field) => ({
+          id: field.id,
+          label: field.label,
+          fieldType: field.field_type,
+          required: field.required,
+          placeholder: field.placeholder ?? undefined,
+          helperText: field.helper_text ?? undefined,
+          options: parseList(field.options),
+          order: field.display_order,
+        }))
+        .sort((a, b) => a.order - b.order),
     } satisfies PaymentPage
   },
   async createIntent(payload: Omit<PublicPaymentPayload, 'paymentMethod' | 'glCode' | 'fieldResponses'>) {

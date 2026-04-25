@@ -7,3 +7,4 @@ export const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE ?? ''
 export const APP_ORIGIN =
   import.meta.env.VITE_APP_ORIGIN ||
   (typeof window !== 'undefined' ? window.location.origin : '')
+export const REQUIRE_VERIFIED_ADMIN = import.meta.env.VITE_REQUIRE_VERIFIED_ADMIN !== 'false'

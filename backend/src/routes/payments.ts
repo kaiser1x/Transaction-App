@@ -2,8 +2,9 @@ import { Router } from "express";
 import { randomUUID } from "crypto";
 import { query, queryOne, execute } from "../db.js";
 import { checkJwt } from "../middleware/auth.js";
+import { sendPaymentReceiptEmail } from "../services/email.js";
 import { createPaymentIntent, verifyPaymentIntent } from "../services/stripe.js";
-import type { PaymentPage, Transaction } from "../types.js";
+import type { PaymentPage, Transaction, User } from "../types.js";
 
 const router = Router();
 
@@ -14,7 +15,18 @@ interface PaymentHistoryRow extends Transaction {
 // GET /api/payments/mine — return transactions for the signed-in payer email
 router.get("/mine", checkJwt, async (req, res, next) => {
   try {
-    const payerEmail = req.auth?.payload["email"] as string | undefined;
+    const auth0Id = req.auth?.payload["sub"] as string | undefined;
+
+    if (!auth0Id) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const user = await queryOne<User>(
+      "SELECT email FROM users WHERE auth0_id = ?",
+      [auth0Id]
+    );
+    const payerEmail = user?.email?.trim();
 
     if (!payerEmail) {
       res.status(400).json({ error: "Signed-in user email is required" });
@@ -107,8 +119,18 @@ router.post("/confirm", async (req, res, next) => {
       return;
     }
 
+    const page = await queryOne<PaymentPage>(
+      "SELECT * FROM payment_pages WHERE id = ?",
+      [pageId]
+    );
+    if (!page) {
+      res.status(404).json({ error: "Payment page not found" });
+      return;
+    }
+
     const status = await verifyPaymentIntent(stripeIntentId);
     const txId = randomUUID();
+    const paymentDate = new Date();
 
     await execute(
       `INSERT INTO transactions
@@ -131,7 +153,33 @@ router.post("/confirm", async (req, res, next) => {
       }
     }
 
-    res.status(201).json({ transactionId: txId, status });
+    const normalizedEmail = payerEmail?.trim().toLowerCase() ?? null;
+    let receiptEmailSent = false;
+
+    if (status === "success" && normalizedEmail) {
+      try {
+        const receiptResult = await sendPaymentReceiptEmail({
+          to: normalizedEmail,
+          transactionId: txId,
+          amount: Number(amount),
+          paymentDate,
+          pageTitle: page.title,
+          pageSlug: page.slug,
+          payerName: payerName ?? null,
+          glCode: glCode ?? null,
+        });
+        receiptEmailSent = receiptResult.sent;
+      } catch (emailErr) {
+        console.error("Payment receipt email failed:", emailErr);
+      }
+    }
+
+    res.status(201).json({
+      transactionId: txId,
+      status,
+      receiptEmailSent,
+      receiptEmail: normalizedEmail,
+    });
   } catch (err) {
     next(err);
   }

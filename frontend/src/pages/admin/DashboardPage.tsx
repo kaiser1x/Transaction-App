@@ -27,8 +27,38 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user?.role !== 'admin') return
-    reportsApi.getReport(defaultFilters).then(setReport)
-    pagesApi.list().then((pages) => setPagesCount(pages.length))
+
+    let cancelled = false
+
+    async function loadDashboard() {
+      try {
+        const [reportData, pages] = await Promise.all([
+          reportsApi.getReport(defaultFilters),
+          pagesApi.list(),
+        ])
+
+        if (cancelled) return
+        setReport(reportData)
+        setPagesCount(pages.length)
+      } catch (error) {
+        console.error('Failed to refresh dashboard:', error)
+      }
+    }
+
+    void loadDashboard()
+
+    const refresh = () => {
+      void loadDashboard()
+    }
+
+    const intervalId = window.setInterval(refresh, 15000)
+    window.addEventListener('focus', refresh)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+      window.removeEventListener('focus', refresh)
+    }
   }, [user?.role])
 
   if (loading) return <LoadingState title="Opening your dashboard..." />

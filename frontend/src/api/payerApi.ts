@@ -4,8 +4,9 @@ import type { PaymentMethod, Transaction } from '../types/transaction'
 import { api } from './client'
 import { listAvailablePages } from './pages'
 
-function parseList(value: string | null) {
+function parseList(value: string[] | string | null | undefined) {
   if (!value) return []
+  if (Array.isArray(value)) return value
   try {
     return JSON.parse(value) as string[]
   } catch {

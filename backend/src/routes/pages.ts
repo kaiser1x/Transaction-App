@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { checkJwt } from "../middleware/auth.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 import { query, queryOne, execute } from "../db.js";
-import type { PaymentPage, User } from "../types.js";
+import type { CustomField, PaymentPage, User } from "../types.js";
 
 interface PageBody {
   slug?: string;
@@ -120,7 +120,13 @@ router.get("/:slug", async (req, res, next) => {
       res.status(404).json({ error: "Page not found or inactive" });
       return;
     }
-    res.json(page);
+
+    const fields = await query<CustomField>(
+      "SELECT * FROM custom_fields WHERE page_id = ? ORDER BY display_order ASC",
+      [page.id]
+    );
+
+    res.json({ ...page, custom_fields: fields });
   } catch (err) {
     next(err);
   }

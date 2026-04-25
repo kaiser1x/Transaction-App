@@ -13,7 +13,31 @@ export default function MyPaymentsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
-    payerApi.listMyPayments().then(setTransactions)
+    let cancelled = false
+
+    async function loadTransactions() {
+      try {
+        const nextTransactions = await payerApi.listMyPayments()
+        if (!cancelled) setTransactions(nextTransactions)
+      } catch (error) {
+        console.error('Failed to refresh payment log:', error)
+      }
+    }
+
+    void loadTransactions()
+
+    const refresh = () => {
+      void loadTransactions()
+    }
+
+    const intervalId = window.setInterval(refresh, 15000)
+    window.addEventListener('focus', refresh)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+      window.removeEventListener('focus', refresh)
+    }
   }, [])
 
   const summary = useMemo(() => {

@@ -9,8 +9,16 @@ import { formatCurrency, formatDateTime } from '../../utils/formatters'
 export default function PaymentSuccessPage() {
   const { slug = '' } = useParams()
   const location = useLocation()
-  const transaction = (location.state as { transaction?: Transaction } | null)?.transaction
-  const page = (location.state as { page?: PaymentPage } | null)?.page
+  const state = location.state as {
+    transaction?: Transaction
+    page?: PaymentPage
+    receiptEmailSent?: boolean
+    receiptEmail?: string | null
+  } | null
+  const transaction = state?.transaction
+  const page = state?.page
+  const receiptEmailSent = state?.receiptEmailSent
+  const receiptEmail = state?.receiptEmail
 
   return (
     <div className="status-page">
@@ -40,6 +48,13 @@ export default function PaymentSuccessPage() {
             <span>Date</span>
             <strong>{formatDateTime(transaction?.createdAt ?? new Date().toISOString())}</strong>
           </div>
+          {receiptEmail ? (
+            <p className="muted-text">
+              {receiptEmailSent
+                ? `A confirmation email was sent to ${receiptEmail}.`
+                : `Payment recorded successfully, but the receipt email could not be sent to ${receiptEmail}.`}
+            </p>
+          ) : null}
           <p className="muted-text">
             Next step: the provider team can reconcile this payment in the reporting workspace.
           </p>

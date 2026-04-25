@@ -196,6 +196,8 @@ export default function PublicPaymentPage() {
           createdAt: new Date().toISOString(),
         },
         page: activePage,
+        receiptEmailSent: result.receiptEmailSent,
+        receiptEmail: result.receiptEmail,
       },
     })
   }

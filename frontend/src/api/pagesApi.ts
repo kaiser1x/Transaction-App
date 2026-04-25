@@ -3,8 +3,9 @@ import type { PaymentPage } from '../types/paymentPage'
 import { createField, deleteField, listFields, updateField } from './fields'
 import { createPage, deletePage, getPageBySlug, listPages, togglePage, updatePage, type PagePayload } from './pages'
 
-function parseList(value: string | null) {
+function parseList(value: string[] | string | null | undefined) {
   if (!value) return []
+  if (Array.isArray(value)) return value
   try {
     return JSON.parse(value) as string[]
   } catch {
@@ -95,7 +96,7 @@ export const pagesApi = {
     const sortedFields = [...page.customFields].sort((a, b) => a.order - b.order)
     const payload = toPayload({ ...page, customFields: sortedFields })
     const isDraft = page.id.startsWith('draft-')
-    const savedPage = isDraft ? await createPage(payload) : await updatePage(page.id, payload)
+    let savedPage = isDraft ? await createPage(payload) : await updatePage(page.id, payload)
     const existingFields = isDraft ? [] : await listFields(savedPage.id)
     const existingFieldIds = new Set(existingFields.map((field) => field.id))
     const currentFieldIds = new Set(sortedFields.map((field) => field.id))
@@ -122,6 +123,10 @@ export const pagesApi = {
       } else {
         await createField(savedPage.id, fieldPayload)
       }
+    }
+
+    if (savedPage.is_active !== page.isActive) {
+      savedPage = await togglePage(savedPage.id)
     }
 
     const refreshedFields = await listFields(savedPage.id)

@@ -26,11 +26,50 @@ export default function ReportsPage() {
   const [report, setReport] = useState<ReportPayload | null>(null)
 
   useEffect(() => {
-    pagesApi.list().then(setPages)
+    let cancelled = false
+
+    async function loadPages() {
+      try {
+        const nextPages = await pagesApi.list()
+        if (!cancelled) setPages(nextPages)
+      } catch (error) {
+        console.error('Failed to load payment pages:', error)
+      }
+    }
+
+    void loadPages()
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
-    reportsApi.getReport(filters).then(setReport)
+    let cancelled = false
+
+    async function loadReport() {
+      try {
+        const nextReport = await reportsApi.getReport(filters)
+        if (!cancelled) setReport(nextReport)
+      } catch (error) {
+        console.error('Failed to refresh reports:', error)
+      }
+    }
+
+    void loadReport()
+
+    const refresh = () => {
+      void loadReport()
+    }
+
+    const intervalId = window.setInterval(refresh, 15000)
+    window.addEventListener('focus', refresh)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+      window.removeEventListener('focus', refresh)
+    }
   }, [filters])
 
   if (!report) return <LoadingState title="Loading reporting workspace..." />

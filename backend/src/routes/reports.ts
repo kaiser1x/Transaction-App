@@ -7,6 +7,20 @@ import type { RowDataPacket } from "mysql2/promise";
 
 const router = Router();
 
+function parsePaginationValue(
+  value: unknown,
+  fallback: number,
+  { min = 0, max = Number.MAX_SAFE_INTEGER }: { min?: number; max?: number } = {}
+): number {
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed < min) {
+    return fallback;
+  }
+
+  return Math.min(parsed, max);
+}
+
 function buildFilters(query: Record<string, unknown>): {
   where: string;
   params: (string | number | boolean | null | Date)[];
@@ -44,8 +58,8 @@ interface TransactionRow extends Transaction {
 // GET /api/reports/transactions
 router.get("/transactions", checkJwt, requireAdmin, async (req, res, next) => {
   try {
-    const limit = Number(req.query["limit"] ?? 50);
-    const offset = Number(req.query["offset"] ?? 0);
+    const limit = parsePaginationValue(req.query["limit"], 50, { min: 1, max: 200 });
+    const offset = parsePaginationValue(req.query["offset"], 0);
     const { where, params } = buildFilters(req.query as Record<string, unknown>);
 
     const rows = await query<TransactionRow>(
@@ -54,8 +68,8 @@ router.get("/transactions", checkJwt, requireAdmin, async (req, res, next) => {
        JOIN payment_pages p ON t.page_id = p.id
        ${where}
        ORDER BY t.created_at DESC
-       LIMIT ? OFFSET ?`,
-      [...params, limit, offset]
+       LIMIT ${limit} OFFSET ${offset}`,
+      params
     );
 
     res.json(rows);

@@ -1,4 +1,5 @@
 // API response shapes - match the backend DB column names (snake_case)
+type JsonStringList = string[] | string | null
 
 export interface ApiPaymentPage {
   id: string
@@ -13,12 +14,13 @@ export interface ApiPaymentPage {
   fixed_amount: string | null
   min_amount: string | null
   max_amount: string | null
-  gl_codes: string | null
+  gl_codes: JsonStringList
   email_template: string | null
   is_active: boolean
   created_by: string
   created_at: string
   updated_at: string
+  custom_fields?: ApiCustomField[]
 }
 
 export interface ApiCustomField {
@@ -26,7 +28,7 @@ export interface ApiCustomField {
   page_id: string
   label: string
   field_type: 'text' | 'number' | 'dropdown' | 'date' | 'checkbox'
-  options: string | null
+  options: JsonStringList
   required: boolean
   placeholder: string | null
   helper_text: string | null
